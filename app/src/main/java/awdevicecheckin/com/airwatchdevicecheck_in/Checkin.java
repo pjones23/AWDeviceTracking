@@ -87,7 +87,8 @@ public class Checkin extends Activity {
 
         // Initial call to get the current device owner.
         // The callback listener will update the ui and notification
-        new MakeRequestTask(getAssets(), getFilesDir(), mHandler, MakeRequestTask.TASK_GET_DEVICE_OWNER, null).execute();
+        new MakeRequestTask(getAssets(), getFilesDir(), mHandler,
+                MakeRequestTask.TASK_GET_DEVICE_OWNER, DeviceUtil.getDeviceDetails()).execute();
     }
 
 }
