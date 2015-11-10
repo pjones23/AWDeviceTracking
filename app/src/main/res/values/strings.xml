@@ -1,0 +1,20 @@
+<!--
+  ~ /*******************************************************************************
+  ~  *
+  ~  * Copyright (c) ${year} AirWatch, LLC. All rights reserved.
+  ~  * This product is protected by copyright and intellectual property laws in
+  ~  * the United States and other countries as well as by international treaties.
+  ~  * AirWatch products may be covered by one or more patents listed at
+  ~  * http://www.vmware.com/go/patents.
+  ~  *
+  ~ *******************************************************************************/
+  -->
+
+<resources>
+    <string name="app_name">AirWatch Device Check-in</string>
+    <string name="action_settings">Settings</string>
+    <string name="current_owner_label">Current Owner</string>
+    <string name="device_info_label">Device Info</string>
+    <string name="change_owner_label">Change Owner</string>
+    <string name="ellipsis">...</string>
+</resources>

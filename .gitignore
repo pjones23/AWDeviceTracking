@@ -1,0 +1,23 @@
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
+
+# /
+/bin
+/proguard
+/map.txt
+/seed.txt
+/gen
+/target
+.idea
+*.iml
+*.ipr
+*.iws
+.gradle
+build
+*~
+local.properties
