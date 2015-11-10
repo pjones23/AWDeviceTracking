@@ -14,6 +14,9 @@ package awdevicecheckin.com.airwatchdevicecheck_in;
 
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -21,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -47,13 +51,24 @@ import com.google.api.services.script.model.Operation;
 public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
 
     private String TAG = "AWCHECKIN:MakeRequestTask";
-    public static String scriptId = "M2qEmMm6IfxrGpH40n0YCf1zPU65frwET";
-    private static AssetManager assetMgr;
-    private static File fileDir;
+    public String scriptId = "M2qEmMm6IfxrGpH40n0YCf1zPU65frwET";
+    private AssetManager assetMgr;
+    private File fileDir;
+    private Handler mHandler;
+    public int task = -1;
+    public Bundle taskParams;
 
-    public MakeRequestTask(AssetManager assetManager, File fileDirectory) {
-        assetMgr = assetManager;
-        fileDir = fileDirectory;
+    public static final int TASK_GET_DEVICE_OWNER = 0;
+    public static final int TASK_ADD_UPDATE_DEVICE_RECORD = 1;
+    public static final int TASK_ADD_OWNER = 2;
+    public static final int TASK_GET_ALL_OWNERS = 3;
+
+    public MakeRequestTask(AssetManager assetManager, File fileDirectory, Handler handler, int executionTask, Bundle params) {
+        this.assetMgr = assetManager;
+        this.fileDir = fileDirectory;
+        this.mHandler = handler;
+        this.task = executionTask;
+        this.taskParams = params;
       }
 
     /**
@@ -61,8 +76,9 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
      * @param params no parameters needed for this task.
      */
     @Override
-    protected List<String> doInBackground(Void... params) {
+    protected ArrayList<String> doInBackground(Void... params) {
 
+        ArrayList<String> result = null;
         try {
             // ID of the script to call. Acquire this from the Apps Script editor,
             // under Publish > Deploy as API executable.
@@ -70,49 +86,42 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
             Script service = getScriptService();
 
             // Create an execution request object.
-            /*
-            ExecutionRequest request = new ExecutionRequest()
-                    .setFunction("addOwner")
-                    .setParameters(Arrays.asList((Object)"Perron Jones"));
-            */
-            ExecutionRequest request = new ExecutionRequest()
-                    .setFunction("getDeviceRecord")
-                    .setParameters(Arrays.asList((Object)"VS986de8c3d8"));
+            ExecutionRequest request = getExecutionRequestByTask();
+            if(request == null) return null;
 
-            // Make the API request.
+            // Make the API request.android
             Operation op = service.scripts().run(scriptId, request).execute();
 
             // Print results of request.
             if (op.getError() != null) {
                 // The API executed, but the script returned an error.
-                System.out.println(getScriptError(op));
+                Log.e(TAG,getScriptError(op));
             } else {
                 // The result provided by the API needs to be cast into
                 // the correct type, based upon what types the Apps
                 // Script function returns. Here, the function returns
                 // an Apps Script Object with String keys and values,
                 // so must be cast into a Java Map (folderSet).
-                Map<String, String> resultSet = (Map<String, String>)(op.getResponse().get("result"));
-                if (resultSet == null || resultSet.size() == 0) {
+                Object apiResult = op.getResponse().get("result");
+                if (apiResult == null) {
                     Log.d(TAG, "No result returned!");
                 } else {
-                    Log.d(TAG, "Folders under your root folder:");
-                    for (String id: resultSet.keySet()) {
-                        Log.d(TAG, "\t" + resultSet.get(id) + " (" + id + ")\n");
+                    result = (ArrayList<String>)apiResult;
+                    Log.d(TAG, "Result found");
+                    for (String info: (ArrayList<String>)apiResult) {
+                        Log.d(TAG, "info: " + info);
                     }
                 }
             }
         } catch (GoogleJsonResponseException e) {
             // The API encountered a problem before the script was called.
             Log.e(TAG, e.getMessage());
-            e.printStackTrace(System.out);
         } catch (IOException e) {
             // The API encountered a problem before the script was called.
             Log.e(TAG, e.getMessage());
-            e.printStackTrace(System.out);
         }
 
-        return null;
+        return result;
     }
 
     /**
@@ -124,7 +133,7 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
      *     to copy and adjust; typically a Credential object.
      * @return an initializer with an extended read timeout.
      */
-    private static HttpRequestInitializer setHttpTimeout(final HttpRequestInitializer requestInitializer) {
+    private HttpRequestInitializer setHttpTimeout(final HttpRequestInitializer requestInitializer) {
         return new HttpRequestInitializer() {
             @Override
             public void initialize(HttpRequest httpRequest) throws IOException {
@@ -143,8 +152,8 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
      * @param {Credential} credential an authorized Credential object
      * @return an authorized Script client service
      */
-    public static Script getScriptService() throws IOException {
-        GoogleCredential credential = AWCheckinOAuth.authorize(assetMgr, fileDir);
+    public Script getScriptService() throws IOException {
+        GoogleCredential credential = AWCheckinOAuth.authorize(this.assetMgr, this.fileDir);
         return new Script.Builder(
                 AWCheckinOAuth.HTTP_TRANSPORT, AWCheckinOAuth.JSON_FACTORY, setHttpTimeout(credential))
                 .setApplicationName(AWCheckinOAuth.APPLICATION_NAME)
@@ -159,7 +168,7 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
      * @return summary of error response, or null if Operation returned no
      *     error
      */
-    public static String getScriptError(Operation op) {
+    public String getScriptError(Operation op) {
         if (op.getError() == null) {
             return null;
         }
@@ -193,4 +202,50 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
         return sb.toString();
     }
 
+    @Override
+    protected void onPostExecute(List<String> strings) {
+        super.onPostExecute(strings);
+        if(strings != null && strings.size() > 0) {
+            Message resultMessage = this.mHandler.obtainMessage();
+            Bundle resultBundle = new Bundle();
+            resultBundle.putString(DeviceUtil.DEVICE_NAME, strings.get(0));
+            resultBundle.putString(DeviceUtil.DEVICE_MODEL, strings.get(1));
+            resultBundle.putString(DeviceUtil.DEVICE_OS, strings.get(2));
+            resultBundle.putString(DeviceUtil.DEVICE_SERIAL, strings.get(3));
+            resultBundle.putString(DeviceUtil.DEVICE_OWNER, strings.get(4));
+            resultBundle.putString(DeviceUtil.DEVICE_TIME, strings.get(5));
+            resultMessage.setData(resultBundle);
+            resultMessage.sendToTarget();
+        }
+    }
+
+    protected ExecutionRequest getExecutionRequestByTask(){
+        ExecutionRequest request = null;
+
+        switch (this.task){
+            case TASK_ADD_UPDATE_DEVICE_RECORD:
+                request = new ExecutionRequest()
+                        .setFunction("insertOrUpdateDeviceRecord")
+                        .setParameters(Arrays.asList((Object)this.taskParams.getString(DeviceUtil.DEVICE_NAME),
+                                (Object)this.taskParams.getString(DeviceUtil.DEVICE_MODEL), (Object)this.taskParams.getString(DeviceUtil.DEVICE_OS),
+                                (Object)this.taskParams.getString(DeviceUtil.DEVICE_SERIAL), (Object)this.taskParams.getString(DeviceUtil.DEVICE_OWNER)));
+                break;
+            case TASK_GET_DEVICE_OWNER:
+                request = new ExecutionRequest()
+                        .setFunction("getDeviceRecord")
+                        .setParameters(Arrays.asList((Object)this.taskParams.getString(DeviceUtil.DEVICE_SERIAL)));
+                break;
+            case TASK_ADD_OWNER:
+                request = new ExecutionRequest()
+                        .setFunction("addOwner")
+                        .setParameters(Arrays.asList((Object)this.taskParams.getString(DeviceUtil.DEVICE_OWNER)));
+                break;
+            case TASK_GET_ALL_OWNERS:
+                request = new ExecutionRequest()
+                        .setFunction("getOwners");
+                break;
+        }
+
+        return request;
+    }
 }

@@ -14,6 +14,9 @@ package awdevicecheckin.com.airwatchdevicecheck_in;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +34,18 @@ public class ChooseOwner extends Activity {
     private Button okBtn;
     private Button cancelBtn;
     private String TAG = "AWCHECKIN:ChooseOwner";
+
+    private Handler mHandler = new Handler(Looper.getMainLooper()){
+        @Override
+        public void handleMessage(Message handlerMessage){
+            // Get Device Owner from message data
+            Bundle msgData = handlerMessage.getData();
+            if(msgData != null){
+
+            }
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -50,7 +65,7 @@ public class ChooseOwner extends Activity {
             @Override
             public void onClick(View v) {
                 // TODO: Set new owner
-                MakeRequestTask mrt = new MakeRequestTask(getAssets(), getFilesDir());
+                MakeRequestTask mrt = new MakeRequestTask(getAssets(), getFilesDir(), mHandler, -1, null);
                 mrt.execute();
             }
         });
