@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ /*******************************************************************************
+  ~  *
+  ~  * Copyright (c) ${year} AirWatch, LLC. All rights reserved.
+  ~  * This product is protected by copyright and intellectual property laws in
+  ~  * the United States and other countries as well as by international treaties.
+  ~  * AirWatch products may be covered by one or more patents listed at
+  ~  * http://www.vmware.com/go/patents.
+  ~  *
+  ~ *******************************************************************************/
+  -->
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/firstLine"
+    android:layout_width="fill_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:layout_alignParentRight="true"
+    android:layout_alignParentTop="true"
+    android:layout_alignWithParentIfMissing="true"
+    android:gravity="center_vertical"
+    android:text="@string/ellipsis"
+    android:textSize="20sp" >
+
+</TextView>

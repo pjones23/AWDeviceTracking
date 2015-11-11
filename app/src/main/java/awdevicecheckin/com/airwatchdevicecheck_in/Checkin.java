@@ -36,9 +36,8 @@ public class Checkin extends Activity {
             if(msgData != null){
                 String owner = msgData.getString(DeviceUtil.DEVICE_OWNER, null);
                 if(owner != null) {
-                    if (ownerTxt == null) {
+                    if (ownerTxt == null)
                         ownerTxt = (TextView) findViewById(R.id.currentOwnerTxt);
-                    }
                     ownerTxt.setText(owner);
                     // set current owner on Notification
                     if(mBuilder != null && mNotifyManager != null) {

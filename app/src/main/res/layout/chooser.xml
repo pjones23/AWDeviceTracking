@@ -23,9 +23,10 @@
         android:id="@+id/searchView" />
 
     <ListView
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/listView" />
+        android:id="@+id/ownerListView"
+        android:background="?android:attr/activatedBackgroundIndicator" />
 
     <LinearLayout
         android:orientation="horizontal"

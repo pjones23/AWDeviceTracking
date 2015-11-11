@@ -106,9 +106,19 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
                 if (apiResult == null) {
                     Log.d(TAG, "No result returned!");
                 } else {
-                    result = (ArrayList<String>)apiResult;
+                    switch (this.task){
+                        case TASK_GET_DEVICE_OWNER:
+                            result = (ArrayList<String>)apiResult;
+                            break;
+                        case TASK_GET_ALL_OWNERS:
+                            result = new ArrayList<String>();
+                            for(int i = 0; i < ((ArrayList) apiResult).size(); i++){
+                                result.add((String)((ArrayList)((ArrayList) apiResult).get(i)).get(0));
+                            }
+                            break;
+                    }
                     Log.d(TAG, "Result found");
-                    for (String info: (ArrayList<String>)apiResult) {
+                    for (String info: result) {
                         Log.d(TAG, "info: " + info);
                     }
                 }
@@ -208,12 +218,19 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
         if(strings != null && strings.size() > 0) {
             Message resultMessage = this.mHandler.obtainMessage();
             Bundle resultBundle = new Bundle();
-            resultBundle.putString(DeviceUtil.DEVICE_NAME, strings.get(0));
-            resultBundle.putString(DeviceUtil.DEVICE_MODEL, strings.get(1));
-            resultBundle.putString(DeviceUtil.DEVICE_OS, strings.get(2));
-            resultBundle.putString(DeviceUtil.DEVICE_SERIAL, strings.get(3));
-            resultBundle.putString(DeviceUtil.DEVICE_OWNER, strings.get(4));
-            resultBundle.putString(DeviceUtil.DEVICE_TIME, strings.get(5));
+            switch (this.task){
+                case TASK_GET_DEVICE_OWNER:
+                    resultBundle.putString(DeviceUtil.DEVICE_NAME, strings.get(0));
+                    resultBundle.putString(DeviceUtil.DEVICE_MODEL, strings.get(1));
+                    resultBundle.putString(DeviceUtil.DEVICE_OS, strings.get(2));
+                    resultBundle.putString(DeviceUtil.DEVICE_SERIAL, strings.get(3));
+                    resultBundle.putString(DeviceUtil.DEVICE_OWNER, strings.get(4));
+                    resultBundle.putString(DeviceUtil.DEVICE_TIME, strings.get(5));
+                    break;
+                case TASK_GET_ALL_OWNERS:
+                    resultBundle.putStringArray(DeviceUtil.DEVICE_OWNER, strings.toArray(new String[strings.size()]));
+                    break;
+            }
             resultMessage.setData(resultBundle);
             resultMessage.sendToTarget();
         }
