@@ -13,14 +13,18 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ChooseOwner">
 
-    <SearchView
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/chooserToolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/searchView" />
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"/>
 
     <ListView
         android:layout_width="fill_parent"
@@ -46,11 +50,6 @@
             android:text="New Button"
             android:id="@+id/okBtn" />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Button"
-            android:id="@+id/addOwnerBtn" />
     </LinearLayout>
 
 </LinearLayout>

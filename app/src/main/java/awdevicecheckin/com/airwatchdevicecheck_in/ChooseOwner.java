@@ -17,12 +17,18 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -40,9 +46,8 @@ import java.util.List;
  * Created by perronj on 11/8/2015.
  */
 
-public class ChooseOwner extends Activity {
+public class ChooseOwner extends AppCompatActivity {
 
-    private SearchView ownerSearchView;
     private ListView ownerListView;
     private Button okBtn;
     private Button cancelBtn;
@@ -93,6 +98,10 @@ public class ChooseOwner extends Activity {
         chosenOwner = null;
         initiateListView();
 
+        Toolbar chooserToolbar = (Toolbar) findViewById(R.id.chooserToolbar);
+        setSupportActionBar(chooserToolbar);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
         Button cancelBtn = (Button) findViewById(R.id.cancelBtn);
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,41 +122,6 @@ public class ChooseOwner extends Activity {
                 }
             }
         });
-
-        Button addOwnerBtn = (Button) findViewById(R.id.addOwnerBtn);
-        addOwnerBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                builder.setTitle("Add Owner");
-                builder.setMessage("Enter new owner name.");
-
-                // Set up the input
-                final EditText input = new EditText(v.getContext());
-                // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-                input.setInputType(InputType.TYPE_CLASS_TEXT);
-                builder.setView(input);
-
-                // Set up the buttons
-                builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d(TAG, input.getText().toString());
-                        Bundle newOwnerBundle = new Bundle();
-                        newOwnerBundle.putString(DeviceUtil.DEVICE_OWNER, input.getText().toString().trim());
-                        executeTask(MakeRequestTask.TASK_ADD_OWNER, newOwnerBundle);
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-                builder.show();
-            }
-        });
     }
 
     @Override
@@ -158,6 +132,32 @@ public class ChooseOwner extends Activity {
         // Initial call to populate the device owner
         // The callback listener will update the ui and notification
         executeTask(MakeRequestTask.TASK_GET_ALL_OWNERS, DeviceUtil.getDeviceDetails());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_checkin, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                // User chose the "Settings" item, show the app settings UI...
+                Log.d(TAG, "selected search");
+                return true;
+            case R.id.action_add_owner:
+                Log.d(TAG, "selected add owner");
+                showAddOwnerDialog();
+                return true;
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
     }
 
     public void initiateListView(){
@@ -180,5 +180,36 @@ public class ChooseOwner extends Activity {
     protected void executeTask(int task, Bundle params){
         new MakeRequestTask(getAssets(), getFilesDir(), mHandler,
                task, params).execute();
+    }
+
+    private void showAddOwnerDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add Owner");
+        builder.setMessage("Enter new owner name.");
+
+        // Set up the input
+        final EditText input = new EditText(this);
+        // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.d(TAG, input.getText().toString());
+                Bundle newOwnerBundle = new Bundle();
+                newOwnerBundle.putString(DeviceUtil.DEVICE_OWNER, input.getText().toString().trim());
+                executeTask(MakeRequestTask.TASK_ADD_OWNER, newOwnerBundle);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
     }
 }

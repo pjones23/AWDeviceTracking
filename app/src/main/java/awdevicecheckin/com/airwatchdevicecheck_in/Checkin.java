@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
@@ -17,7 +18,7 @@ import android.widget.TextView;
 
 
 
-public class Checkin extends Activity {
+public class Checkin extends AppCompatActivity {
 
     private Button changeOwnerBtn;
     private TextView ownerTxt;
@@ -55,7 +56,7 @@ public class Checkin extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_checkin);
+        setContentView(R.layout.content_checkin);
 
         ownerTxt = (TextView) findViewById(R.id.currentOwnerTxt);
 
