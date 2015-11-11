@@ -75,8 +75,7 @@ public class ChooseOwner extends Activity {
                         break;
                     case MakeRequestTask.TASK_ADD_OWNER:
                         // refresh the list of owners
-                        new MakeRequestTask(getAssets(), getFilesDir(), this,
-                                MakeRequestTask.TASK_GET_ALL_OWNERS, DeviceUtil.getDeviceDetails()).execute();
+                        executeTask(MakeRequestTask.TASK_GET_ALL_OWNERS, DeviceUtil.getDeviceDetails());
                         break;
                 }
             }
@@ -110,9 +109,7 @@ public class ChooseOwner extends Activity {
                 if(chosenOwner != null) {
                     Bundle deviceInfo = DeviceUtil.getDeviceDetails();
                     deviceInfo.putString(DeviceUtil.DEVICE_OWNER, chosenOwner);
-                    new MakeRequestTask(getAssets(), getFilesDir(), mHandler,
-                            MakeRequestTask.TASK_ADD_UPDATE_DEVICE_RECORD, deviceInfo).
-                            execute();
+                    executeTask(MakeRequestTask.TASK_ADD_UPDATE_DEVICE_RECORD, deviceInfo);
                 }
             }
         });
@@ -136,6 +133,9 @@ public class ChooseOwner extends Activity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Log.d(TAG, input.getText().toString());
+                        Bundle newOwnerBundle = new Bundle();
+                        newOwnerBundle.putString(DeviceUtil.DEVICE_OWNER, input.getText().toString().trim());
+                        executeTask(MakeRequestTask.TASK_ADD_OWNER, newOwnerBundle);
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -157,8 +157,7 @@ public class ChooseOwner extends Activity {
 
         // Initial call to populate the device owner
         // The callback listener will update the ui and notification
-        new MakeRequestTask(getAssets(), getFilesDir(), mHandler,
-                MakeRequestTask.TASK_GET_ALL_OWNERS, DeviceUtil.getDeviceDetails()).execute();
+        executeTask(MakeRequestTask.TASK_GET_ALL_OWNERS, DeviceUtil.getDeviceDetails());
     }
 
     public void initiateListView(){
@@ -176,5 +175,10 @@ public class ChooseOwner extends Activity {
                 chosenOwner = ownerArray.get(position);
             }
         });
+    }
+
+    protected void executeTask(int task, Bundle params){
+        new MakeRequestTask(getAssets(), getFilesDir(), mHandler,
+               task, params).execute();
     }
 }
