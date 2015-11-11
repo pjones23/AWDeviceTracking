@@ -58,6 +58,7 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
     public int task = -1;
     public Bundle taskParams;
 
+    public static final String TASK_HEADER = "task";
     public static final int TASK_GET_DEVICE_OWNER = 0;
     public static final int TASK_ADD_UPDATE_DEVICE_RECORD = 1;
     public static final int TASK_ADD_OWNER = 2;
@@ -105,6 +106,7 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
                 Object apiResult = op.getResponse().get("result");
                 if (apiResult == null) {
                     Log.d(TAG, "No result returned!");
+
                 } else {
                     switch (this.task){
                         case TASK_GET_DEVICE_OWNER:
@@ -215,9 +217,11 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
     @Override
     protected void onPostExecute(List<String> strings) {
         super.onPostExecute(strings);
+
+        Message resultMessage = this.mHandler.obtainMessage();
+        Bundle resultBundle = new Bundle();
+        resultBundle.putInt(TASK_HEADER, this.task);
         if(strings != null && strings.size() > 0) {
-            Message resultMessage = this.mHandler.obtainMessage();
-            Bundle resultBundle = new Bundle();
             switch (this.task){
                 case TASK_GET_DEVICE_OWNER:
                     resultBundle.putString(DeviceUtil.DEVICE_NAME, strings.get(0));
@@ -231,9 +235,9 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
                     resultBundle.putStringArray(DeviceUtil.DEVICE_OWNER, strings.toArray(new String[strings.size()]));
                     break;
             }
-            resultMessage.setData(resultBundle);
-            resultMessage.sendToTarget();
         }
+        resultMessage.setData(resultBundle);
+        resultMessage.sendToTarget();
     }
 
     protected ExecutionRequest getExecutionRequestByTask(){

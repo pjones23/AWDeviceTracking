@@ -13,17 +13,21 @@
 package awdevicecheckin.com.airwatchdevicecheck_in;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
 
@@ -53,19 +57,34 @@ public class ChooseOwner extends Activity {
             // Get Device Owner from message data
             Bundle msgData = handlerMessage.getData();
             if(msgData != null){
-                // populate the owner list view with owners
-                String[] owners = msgData.getStringArray(DeviceUtil.DEVICE_OWNER);
-                if(owners != null && owners.length >0){
-                    if(ownerListView ==null)
-                        initiateListView();
-                    ownerArray.clear();
-                    ownerArray.addAll(Arrays.asList(owners));
-                    ownerArrayAdapter.notifyDataSetChanged();
+                int task = msgData.getInt(MakeRequestTask.TASK_HEADER, -1);
+                switch (task) {
+                    case MakeRequestTask.TASK_GET_ALL_OWNERS:
+                        // populate the owner list view with owners
+                        String[] owners = msgData.getStringArray(DeviceUtil.DEVICE_OWNER);
+                        if (owners != null && owners.length > 0) {
+                            if (ownerListView == null)
+                                initiateListView();
+                            ownerArray.clear();
+                            ownerArray.addAll(Arrays.asList(owners));
+                            ownerArrayAdapter.notifyDataSetChanged();
+                        }
+                        break;
+                    case MakeRequestTask.TASK_ADD_UPDATE_DEVICE_RECORD:
+                        finish();
+                        break;
+                    case MakeRequestTask.TASK_ADD_OWNER:
+                        // refresh the list of owners
+                        new MakeRequestTask(getAssets(), getFilesDir(), this,
+                                MakeRequestTask.TASK_GET_ALL_OWNERS, DeviceUtil.getDeviceDetails()).execute();
+                        break;
                 }
             }
 
         }
     };
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -98,6 +117,37 @@ public class ChooseOwner extends Activity {
             }
         });
 
+        Button addOwnerBtn = (Button) findViewById(R.id.addOwnerBtn);
+        addOwnerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                builder.setTitle("Add Owner");
+                builder.setMessage("Enter new owner name.");
+
+                // Set up the input
+                final EditText input = new EditText(v.getContext());
+                // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+                input.setInputType(InputType.TYPE_CLASS_TEXT);
+                builder.setView(input);
+
+                // Set up the buttons
+                builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d(TAG, input.getText().toString());
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
+            }
+        });
     }
 
     @Override
@@ -126,12 +176,5 @@ public class ChooseOwner extends Activity {
                 chosenOwner = ownerArray.get(position);
             }
         });
-    }
-
-    private class OwnerArrayAdapter extends ArrayAdapter<String> {
-
-        public OwnerArrayAdapter(Context context, int resource, List<String> objects) {
-            super(context, resource, objects);
-        }
     }
 }
