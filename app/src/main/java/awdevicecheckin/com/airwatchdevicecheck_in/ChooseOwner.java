@@ -14,17 +14,21 @@ package awdevicecheckin.com.airwatchdevicecheck_in;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,8 +38,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Filter;
 import android.widget.ListView;
-import android.widget.SearchView;
+import android.support.v7.widget.SearchView;
+import android.widget.TextView;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -46,13 +52,15 @@ import java.util.List;
  * Created by perronj on 11/8/2015.
  */
 
-public class ChooseOwner extends AppCompatActivity {
+public class ChooseOwner extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     private ListView ownerListView;
+    private SearchView ownerSearchView;
     private Button okBtn;
     private Button cancelBtn;
     private String TAG = "AWCHECKIN:ChooseOwner";
     private ArrayAdapter ownerArrayAdapter;
+    private Filter searchFilter;
     private ArrayList<String> ownerArray;
     private String chosenOwner;
 
@@ -94,6 +102,12 @@ public class ChooseOwner extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chooser);
+
+        Intent searchIntent = getIntent();
+        if(Intent.ACTION_SEARCH.equals(searchIntent.getAction())){
+            String query = searchIntent.getStringExtra(SearchManager.QUERY);
+            // call search function
+        }
 
         chosenOwner = null;
         initiateListView();
@@ -137,6 +151,13 @@ public class ChooseOwner extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_chooser, menu);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        ownerSearchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        ownerSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        ownerSearchView.setOnQueryTextListener(this);
+
         return true;
     }
 
@@ -166,6 +187,7 @@ public class ChooseOwner extends AppCompatActivity {
 
         ownerArray = new ArrayList<String>();
         ownerArrayAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.owner_list_item, ownerArray);
+        searchFilter = ownerArrayAdapter.getFilter();
         ownerListView = (ListView) findViewById(R.id.ownerListView);
         ownerListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         ownerListView.setAdapter(ownerArrayAdapter);
@@ -174,7 +196,7 @@ public class ChooseOwner extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id){
                 Log.d(TAG, "Clicked on List Item");
-                chosenOwner = ownerArray.get(position);
+                chosenOwner =((TextView)view).getText().toString();
             }
         });
     }
@@ -214,4 +236,14 @@ public class ChooseOwner extends AppCompatActivity {
 
         builder.show();
     }
+
+    public boolean onQueryTextChange(String newText) {
+        searchFilter.filter(newText);
+        return true;
+    }
+
+    public boolean onQueryTextSubmit(String newText) {
+        return false;
+    }
+
 }

@@ -25,8 +25,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ChooseOwner" >
-        </activity>
+        <activity android:name=".ChooseOwner" />
 
     </application>
 
