@@ -40,10 +40,11 @@ public class Checkin extends AppCompatActivity {
             Bundle msgData = handlerMessage.getData();
             if(msgData != null){
                 String owner = msgData.getString(DeviceUtil.DEVICE_OWNER, null);
+                String checkInDate = msgData.getString(DeviceUtil.DEVICE_TIME, "");
                 if(owner != null) {
                     if (ownerTxt == null)
                         ownerTxt = (TextView) findViewById(R.id.currentOwnerTxt);
-                    ownerTxt.setText(owner);
+                    ownerTxt.setText(owner + "\n" + checkInDate);
                     // set current owner on Notification
                     if(mBuilder != null && mNotifyManager != null) {
                         mBuilder.setContentText("Owner: " + owner);
@@ -64,6 +65,8 @@ public class Checkin extends AppCompatActivity {
 
         Toolbar checkinToolbar = (Toolbar) findViewById(R.id.checkinToolbar);
         setSupportActionBar(checkinToolbar);
+
+        deviceInfoTxt = (TextView) findViewById(R.id.deviceInfoTxt);
 
         ownerTxt = (TextView) findViewById(R.id.currentOwnerTxt);
 
@@ -91,11 +94,18 @@ public class Checkin extends AppCompatActivity {
 
         Log.d(TAG, "onResume");
 
+        Bundle deviceInfo = DeviceUtil.getDeviceDetails();
+        deviceInfoTxt.setText(DeviceUtil.DEVICE_NAME + ": " + deviceInfo.getString(DeviceUtil.DEVICE_NAME, "")
+            + "\n" + DeviceUtil.DEVICE_MODEL + ": " + deviceInfo.getString(DeviceUtil.DEVICE_MODEL, "")
+            + "\n" + DeviceUtil.DEVICE_OS + ": " + deviceInfo.getString(DeviceUtil.DEVICE_OS, "")
+            + "\n" + DeviceUtil.DEVICE_SERIAL + ": " + deviceInfo.getString(DeviceUtil.DEVICE_SERIAL, "")
+        );
+
 
         // Initial call to get the current device owner.
         // The callback listener will update the ui and notification
         new MakeRequestTask(getAssets(), getFilesDir(), mHandler,
-                MakeRequestTask.TASK_GET_DEVICE_OWNER, DeviceUtil.getDeviceDetails()).execute();
+                MakeRequestTask.TASK_GET_DEVICE_OWNER, deviceInfo).execute();
     }
 
     @Override
