@@ -152,6 +152,9 @@ public class ChooseOwner extends AppCompatActivity {
                 Log.d(TAG, "selected add owner");
                 showAddOwnerDialog();
                 return true;
+            case R.id.action_sync_owners:
+                // refresh the list of owners
+                executeTask(MakeRequestTask.TASK_GET_ALL_OWNERS, DeviceUtil.getDeviceDetails());
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
