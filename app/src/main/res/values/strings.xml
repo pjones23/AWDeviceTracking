@@ -16,6 +16,7 @@
     <string name="action_search_owner">Search Owners</string>
     <string name="action_add_owner">Add Owner</string>
     <string name="action_sync_owners">Sync Owners</string>
+    <string name="action_sync_device_info">Sync Device Info</string>
     <string name="current_owner_label">Current Owner</string>
     <string name="device_info_label">Device Info</string>
     <string name="change_owner_label">Change Owner</string>

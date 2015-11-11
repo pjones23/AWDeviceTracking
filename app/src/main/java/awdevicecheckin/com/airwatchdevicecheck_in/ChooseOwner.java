@@ -100,7 +100,6 @@ public class ChooseOwner extends AppCompatActivity {
 
         Toolbar chooserToolbar = (Toolbar) findViewById(R.id.chooserToolbar);
         setSupportActionBar(chooserToolbar);
-        getSupportActionBar().setHomeButtonEnabled(true);
 
         Button cancelBtn = (Button) findViewById(R.id.cancelBtn);
         cancelBtn.setOnClickListener(new View.OnClickListener() {
@@ -137,7 +136,7 @@ public class ChooseOwner extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_checkin, menu);
+        inflater.inflate(R.menu.menu_chooser, menu);
         return true;
     }
 

@@ -11,7 +11,11 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -56,7 +60,10 @@ public class Checkin extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.content_checkin);
+        setContentView(R.layout.activity_checkin);
+
+        Toolbar checkinToolbar = (Toolbar) findViewById(R.id.checkinToolbar);
+        setSupportActionBar(checkinToolbar);
 
         ownerTxt = (TextView) findViewById(R.id.currentOwnerTxt);
 
@@ -89,6 +96,28 @@ public class Checkin extends AppCompatActivity {
         // The callback listener will update the ui and notification
         new MakeRequestTask(getAssets(), getFilesDir(), mHandler,
                 MakeRequestTask.TASK_GET_DEVICE_OWNER, DeviceUtil.getDeviceDetails()).execute();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_checkin, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_sync_device_info:
+                // refresh the list of owners
+                new MakeRequestTask(getAssets(), getFilesDir(), mHandler,
+                        MakeRequestTask.TASK_GET_DEVICE_OWNER, DeviceUtil.getDeviceDetails()).execute();
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
     }
 
 }
