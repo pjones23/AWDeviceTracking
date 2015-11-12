@@ -183,7 +183,7 @@ public class ChooseOwner extends AppCompatActivity implements SearchView.OnQuery
     public void initiateListView(){
 
         ownerArray = new ArrayList<String>();
-        ownerArrayAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.owner_list_item, ownerArray);
+        ownerArrayAdapter = new ArrayAdapter<String>(getBaseContext(), R.layout.owner_list_item, ownerArray);
         searchFilter = ownerArrayAdapter.getFilter();
         ownerListView = (ListView) findViewById(R.id.ownerListView);
         ownerListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
