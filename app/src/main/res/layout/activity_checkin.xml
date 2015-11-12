@@ -34,7 +34,8 @@
         android:text="@string/device_info_label"
         android:id="@+id/appLabel"
         android:layout_below="@+id/checkinToolbar"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textColor="#000000" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -43,7 +44,8 @@
         android:id="@+id/deviceInfoTxt"
         android:layout_below="@+id/appLabel"
         android:layout_centerHorizontal="true"
-        android:autoText="false" />
+        android:autoText="false"
+        android:textColor="#FF5A5A5A" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -52,7 +54,8 @@
         android:text="@string/current_owner_label"
         android:id="@+id/currentOwnerLabel"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textColor="#000000" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -60,7 +63,8 @@
         android:text="@string/ellipsis"
         android:id="@+id/currentOwnerTxt"
         android:layout_below="@+id/currentOwnerLabel"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textColor="#FF5A5A5A" />
 
     <Button
         android:layout_width="wrap_content"
@@ -73,5 +77,15 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/LogoImageView"
+        android:layout_above="@+id/changeOwnerBtn"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/aw_logo"
+        android:contentDescription="@string/aw_logo" />
 
 </RelativeLayout>

@@ -110,6 +110,8 @@ public class ChooseOwner extends AppCompatActivity implements SearchView.OnQuery
 
         Toolbar chooserToolbar = (Toolbar) findViewById(R.id.chooserToolbar);
         setSupportActionBar(chooserToolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setIcon(R.drawable.ic_title_airwatch);
 
         cancelBtn = (Button) findViewById(R.id.cancelBtn);
         cancelBtn.setOnClickListener(new View.OnClickListener() {

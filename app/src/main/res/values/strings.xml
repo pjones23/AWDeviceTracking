@@ -24,4 +24,5 @@
     <string name="search_hint">Search owners</string>
     <string name="cancel_btnTxt">Cancel</string>
     <string name="ok_btnTxt">Submit</string>
+    <string name="aw_logo">AirWatch Logo</string>
 </resources>

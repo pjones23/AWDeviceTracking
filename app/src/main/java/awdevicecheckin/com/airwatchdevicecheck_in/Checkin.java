@@ -82,7 +82,7 @@ public class Checkin extends AppCompatActivity {
         mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mBuilder = new NotificationCompat.Builder(this);
         mBuilder.setContentTitle("AirWatch Device Check-in");
-        mBuilder.setSmallIcon(R.drawable.notification_icon);
+        mBuilder.setSmallIcon(R.drawable.ic_title_airwatch);
         mBuilder.setOngoing(true);
 
         Intent checkinIntent = new Intent();
