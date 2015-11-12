@@ -12,6 +12,8 @@
 
 package awdevicecheckin.com.airwatchdevicecheck_in;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -57,6 +59,8 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
     private Handler mHandler;
     public int task = -1;
     public Bundle taskParams;
+    private Context callingContext;
+    private ProgressDialog progDailog;
 
     public static final String TASK_HEADER = "task";
     public static final int TASK_GET_DEVICE_OWNER = 0;
@@ -64,13 +68,25 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
     public static final int TASK_ADD_OWNER = 2;
     public static final int TASK_GET_ALL_OWNERS = 3;
 
-    public MakeRequestTask(AssetManager assetManager, File fileDirectory, Handler handler, int executionTask, Bundle params) {
+    public MakeRequestTask(Context context, AssetManager assetManager, File fileDirectory, Handler handler, int executionTask, Bundle params) {
+        this.callingContext = context;
         this.assetMgr = assetManager;
         this.fileDir = fileDirectory;
         this.mHandler = handler;
         this.task = executionTask;
         this.taskParams = params;
       }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        progDailog = new ProgressDialog(this.callingContext);
+        progDailog.setMessage("Loading...");
+        progDailog.setIndeterminate(false);
+        progDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progDailog.setCancelable(false);
+        progDailog.show();
+    }
 
     /**
      * Background task to call Google Apps Script Execution API.
@@ -217,6 +233,8 @@ public class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
     @Override
     protected void onPostExecute(List<String> strings) {
         super.onPostExecute(strings);
+
+        progDailog.dismiss();
 
         Message resultMessage = this.mHandler.obtainMessage();
         Bundle resultBundle = new Bundle();

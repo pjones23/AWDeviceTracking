@@ -116,7 +116,7 @@ public class Checkin extends AppCompatActivity {
 
         // Initial call to get the current device owner.
         // The callback listener will update the ui and notification
-        new MakeRequestTask(getAssets(), getFilesDir(), mHandler,
+        new MakeRequestTask(this, getAssets(), getFilesDir(), mHandler,
                 MakeRequestTask.TASK_GET_DEVICE_OWNER, deviceInfo).execute();
     }
 
@@ -132,7 +132,7 @@ public class Checkin extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_sync_device_info:
                 // refresh the list of owners
-                new MakeRequestTask(getAssets(), getFilesDir(), mHandler,
+                new MakeRequestTask(this, getAssets(), getFilesDir(), mHandler,
                         MakeRequestTask.TASK_GET_DEVICE_OWNER, DeviceUtil.getDeviceDetails()).execute();
             default:
                 // If we got here, the user's action was not recognized.

@@ -202,7 +202,7 @@ public class ChooseOwner extends AppCompatActivity implements SearchView.OnQuery
     }
 
     protected void executeTask(int task, Bundle params){
-        new MakeRequestTask(getAssets(), getFilesDir(), mHandler,
+        new MakeRequestTask(this, getAssets(), getFilesDir(), mHandler,
                task, params).execute();
     }
 
