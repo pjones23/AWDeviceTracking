@@ -2,6 +2,8 @@ package awdevicecheckin.com.airwatchdevicecheck_in;
 
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -82,6 +84,16 @@ public class Checkin extends AppCompatActivity {
         mBuilder.setContentTitle("AirWatch Device Check-in");
         mBuilder.setSmallIcon(R.drawable.notification_icon);
         mBuilder.setOngoing(true);
+
+        Intent checkinIntent = new Intent();
+        checkinIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        ComponentName cn = new ComponentName(getApplicationContext(), "awdevicecheckin.com.airwatchdevicecheck_in.Checkin");
+        checkinIntent.setComponent(cn);
+
+        // Gets a PendingIntent
+        PendingIntent checkinPendingIntent = PendingIntent.getActivity(this, 0, checkinIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(checkinPendingIntent);
+
         // Displays the progress bar for the first time.
         mNotifyManager.notify(notificationID, mBuilder.build());
 
