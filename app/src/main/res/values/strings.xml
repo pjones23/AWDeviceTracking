@@ -22,4 +22,6 @@
     <string name="change_owner_label">Change Owner</string>
     <string name="ellipsis">...</string>
     <string name="search_hint">Search owners</string>
+    <string name="cancel_btnTxt">Cancel</string>
+    <string name="ok_btnTxt">Submit</string>
 </resources>

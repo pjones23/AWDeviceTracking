@@ -20,6 +20,9 @@
     android:layout_alignWithParentIfMissing="true"
     android:gravity="center_vertical"
     android:text="@string/ellipsis"
-    android:textSize="20sp" >
+    android:textSize="20sp"
+    android:background="?android:attr/activatedBackgroundIndicator"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp">
 
 </TextView>

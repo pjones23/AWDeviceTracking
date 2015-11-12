@@ -26,7 +26,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ChooseOwner" />
+        <activity android:name=".ChooseOwner"
+            android:theme="@style/AppTheme.NoActionBar" />
 
     </application>
 
