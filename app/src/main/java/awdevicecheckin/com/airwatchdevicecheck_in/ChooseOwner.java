@@ -12,14 +12,8 @@
 
 package awdevicecheckin.com.airwatchdevicecheck_in;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.SearchManager;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -28,7 +22,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -43,10 +36,8 @@ import android.widget.ListView;
 import android.support.v7.widget.SearchView;
 import android.widget.TextView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by perronj on 11/8/2015.
@@ -56,6 +47,7 @@ public class ChooseOwner extends AppCompatActivity implements SearchView.OnQuery
 
     private ListView ownerListView;
     private SearchView ownerSearchView;
+    private MenuItem searchMenuItem;
     private Button okBtn;
     private Button cancelBtn;
     private String TAG = "AWCHECKIN:ChooseOwner";
@@ -89,6 +81,16 @@ public class ChooseOwner extends AppCompatActivity implements SearchView.OnQuery
                     case MakeRequestTask.TASK_ADD_OWNER:
                         // refresh the list of owners
                         executeTask(MakeRequestTask.TASK_GET_ALL_OWNERS, DeviceUtil.getDeviceDetails());
+
+                        // reset adapter because adapter does not update after filtering (common Android issue)
+                        ownerArray.clear();
+                        ownerArray = null;
+                        ownerArrayAdapter.clear();
+                        ownerArrayAdapter = null;
+                        searchFilter = null;
+                        ownerSearchView.setQuery("", false);
+                        searchMenuItem.collapseActionView();
+                        initiateListView();
                         break;
                 }
             }
@@ -103,19 +105,13 @@ public class ChooseOwner extends AppCompatActivity implements SearchView.OnQuery
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chooser);
 
-        Intent searchIntent = getIntent();
-        if(Intent.ACTION_SEARCH.equals(searchIntent.getAction())){
-            String query = searchIntent.getStringExtra(SearchManager.QUERY);
-            // call search function
-        }
-
         chosenOwner = null;
         initiateListView();
 
         Toolbar chooserToolbar = (Toolbar) findViewById(R.id.chooserToolbar);
         setSupportActionBar(chooserToolbar);
 
-        Button cancelBtn = (Button) findViewById(R.id.cancelBtn);
+        cancelBtn = (Button) findViewById(R.id.cancelBtn);
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -123,7 +119,7 @@ public class ChooseOwner extends AppCompatActivity implements SearchView.OnQuery
             }
         });
 
-        Button okBtn = (Button) findViewById(R.id.okBtn);
+        okBtn = (Button) findViewById(R.id.okBtn);
         okBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -152,11 +148,10 @@ public class ChooseOwner extends AppCompatActivity implements SearchView.OnQuery
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_chooser, menu);
 
-        // Associate searchable configuration with the SearchView
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        ownerSearchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        ownerSearchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchMenuItem = menu.findItem(R.id.action_search);
+        ownerSearchView = (SearchView) searchMenuItem.getActionView();
         ownerSearchView.setOnQueryTextListener(this);
+        ownerSearchView.setQueryHint(getString(R.string.search_hint));
 
         return true;
     }
@@ -238,7 +233,8 @@ public class ChooseOwner extends AppCompatActivity implements SearchView.OnQuery
     }
 
     public boolean onQueryTextChange(String newText) {
-        searchFilter.filter(newText);
+        if(searchFilter != null)
+            searchFilter.filter(newText);
         return true;
     }
 
