@@ -18,7 +18,9 @@ import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -181,6 +183,7 @@ public class Checkin extends AppCompatActivity {
         TextView spreadsheetLink = new TextView(this);
         spreadsheetLink.setClickable(true);
         spreadsheetLink.setGravity(Gravity.CENTER_HORIZONTAL);
+        spreadsheetLink.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
         spreadsheetLink.setMovementMethod(LinkMovementMethod.getInstance());
         String link = "<a href='https://docs.google.com/spreadsheets/d/1PcjTdM1OGyqVA9ePNm-7dMqlI246xuLH4tik4EvX6tc/edit?usp=sharing'>Device Tracking Spreadsheet</a>";
         spreadsheetLink.setText(Html.fromHtml(link));
