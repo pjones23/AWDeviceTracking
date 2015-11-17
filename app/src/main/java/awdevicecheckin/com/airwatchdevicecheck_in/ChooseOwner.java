@@ -13,7 +13,10 @@
 package awdevicecheckin.com.airwatchdevicecheck_in;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -79,17 +82,20 @@ public class ChooseOwner extends AppCompatActivity implements SearchView.OnQuery
                         break;
                     case MakeRequestTask.TASK_ADD_OWNER:
                         // refresh the list of owners
-                        executeTask(MakeRequestTask.TASK_GET_ALL_OWNERS, DeviceUtil.getDeviceDetails());
+                        if(DeviceUtil.isDeviceConnected(getBaseContext())) {
+                            executeTask(MakeRequestTask.TASK_GET_ALL_OWNERS, DeviceUtil.getDeviceDetails());
 
-                        // reset adapter because adapter does not update after filtering (common Android issue)
-                        ownerArray.clear();
-                        ownerArray = null;
-                        ownerArrayAdapter.clear();
-                        ownerArrayAdapter = null;
-                        searchFilter = null;
-                        ownerSearchView.setQuery("", false);
-                        searchMenuItem.collapseActionView();
-                        initiateListView();
+                            // reset adapter because adapter does not update after filtering (common Android issue)
+                            ownerArray.clear();
+                            ownerArray = null;
+                            ownerArrayAdapter.clear();
+                            ownerArrayAdapter = null;
+                            searchFilter = null;
+                            ownerSearchView.setQuery("", false);
+                            searchMenuItem.collapseActionView();
+                            initiateListView();
+                        }
+                        showNoConnectionDialog();
                         break;
                 }
             }
@@ -125,10 +131,12 @@ public class ChooseOwner extends AppCompatActivity implements SearchView.OnQuery
             @Override
             public void onClick(View v) {
                 // set new owner
-                if(chosenOwner != null) {
+                if (chosenOwner != null) {
                     Bundle deviceInfo = DeviceUtil.getDeviceDetails();
                     deviceInfo.putString(DeviceUtil.DEVICE_OWNER, chosenOwner);
-                    executeTask(MakeRequestTask.TASK_ADD_UPDATE_DEVICE_RECORD, deviceInfo);
+                    if(DeviceUtil.isDeviceConnected(getBaseContext()))
+                        executeTask(MakeRequestTask.TASK_ADD_UPDATE_DEVICE_RECORD, deviceInfo);
+                    else showNoConnectionDialog();
                 }
             }
         });
@@ -141,7 +149,9 @@ public class ChooseOwner extends AppCompatActivity implements SearchView.OnQuery
 
         // Initial call to populate the device owner
         // The callback listener will update the ui and notification
-        executeTask(MakeRequestTask.TASK_GET_ALL_OWNERS, DeviceUtil.getDeviceDetails());
+        if(DeviceUtil.isDeviceConnected(getBaseContext()))
+            executeTask(MakeRequestTask.TASK_GET_ALL_OWNERS, DeviceUtil.getDeviceDetails());
+        else showNoConnectionDialog();
     }
 
     @Override
@@ -170,13 +180,16 @@ public class ChooseOwner extends AppCompatActivity implements SearchView.OnQuery
                 return true;
             case R.id.action_sync_owners:
                 // refresh the list of owners
-                executeTask(MakeRequestTask.TASK_GET_ALL_OWNERS, DeviceUtil.getDeviceDetails());
+                if(DeviceUtil.isDeviceConnected(getBaseContext()))
+                    executeTask(MakeRequestTask.TASK_GET_ALL_OWNERS, DeviceUtil.getDeviceDetails());
+                else showNoConnectionDialog();
+                break;
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
-
         }
+        return super.onOptionsItemSelected(item);
     }
 
     public void initiateListView(){
@@ -199,7 +212,7 @@ public class ChooseOwner extends AppCompatActivity implements SearchView.OnQuery
 
     protected void executeTask(int task, Bundle params){
         new MakeRequestTask(this, getAssets(), getFilesDir(), mHandler,
-               task, params).execute();
+                    task, params).execute();
     }
 
     private void showAddOwnerDialog(){
@@ -220,7 +233,9 @@ public class ChooseOwner extends AppCompatActivity implements SearchView.OnQuery
                 Log.d(TAG, input.getText().toString());
                 Bundle newOwnerBundle = new Bundle();
                 newOwnerBundle.putString(DeviceUtil.DEVICE_OWNER, input.getText().toString().trim());
-                executeTask(MakeRequestTask.TASK_ADD_OWNER, newOwnerBundle);
+                if(DeviceUtil.isDeviceConnected(getBaseContext()))
+                    executeTask(MakeRequestTask.TASK_ADD_OWNER, newOwnerBundle);
+                else showNoConnectionDialog();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -230,6 +245,20 @@ public class ChooseOwner extends AppCompatActivity implements SearchView.OnQuery
             }
         });
 
+        builder.show();
+    }
+
+    private void showNoConnectionDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("No Internet Connection");
+        builder.setMessage("No internet connection.\nTry again once a connection has been established.");
+
+        builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
         builder.show();
     }
 

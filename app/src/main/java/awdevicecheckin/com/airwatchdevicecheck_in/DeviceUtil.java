@@ -12,6 +12,9 @@
 
 package awdevicecheckin.com.airwatchdevicecheck_in;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -39,6 +42,12 @@ public class DeviceUtil {
                 : Build.HARDWARE + "-" + Build.DISPLAY));
 
         return deviceInfo;
+    }
+
+    public static boolean isDeviceConnected(Context context){
+        ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        return (activeNetwork != null && activeNetwork.isConnectedOrConnecting());
     }
 
 }

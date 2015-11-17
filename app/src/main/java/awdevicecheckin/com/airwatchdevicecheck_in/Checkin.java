@@ -57,6 +57,15 @@ public class Checkin extends AppCompatActivity {
                         mBuilder.setContentText("Owner: " + owner);
                         mNotifyManager.notify(notificationID, mBuilder.build());
                     }
+                }else {
+                    if (ownerTxt == null)
+                        ownerTxt = (TextView) findViewById(R.id.currentOwnerTxt);
+                    ownerTxt.setText("Owner: None");
+                    // set current owner on Notification
+                    if(mBuilder != null && mNotifyManager != null) {
+                        mBuilder.setContentText("Owner: None");
+                        mNotifyManager.notify(notificationID, mBuilder.build());
+                    }
                 }
             }
 
@@ -122,8 +131,9 @@ public class Checkin extends AppCompatActivity {
 
         // Initial call to get the current device owner.
         // The callback listener will update the ui and notification
-        new MakeRequestTask(this, getAssets(), getFilesDir(), mHandler,
-                MakeRequestTask.TASK_GET_DEVICE_OWNER, deviceInfo).execute();
+        if(DeviceUtil.isDeviceConnected(getBaseContext()))
+            executeTask(MakeRequestTask.TASK_GET_DEVICE_OWNER, deviceInfo);
+        else showNoConnectionDialog();
     }
 
     @Override
@@ -138,11 +148,14 @@ public class Checkin extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_sync_device_info:
                 // refresh the list of owners
-                new MakeRequestTask(this, getAssets(), getFilesDir(), mHandler,
-                        MakeRequestTask.TASK_GET_DEVICE_OWNER, DeviceUtil.getDeviceDetails()).execute();
+                if(DeviceUtil.isDeviceConnected(getBaseContext()))
+                    executeTask(MakeRequestTask.TASK_GET_DEVICE_OWNER, DeviceUtil.getDeviceDetails());
+                else showNoConnectionDialog();
+                return true;
             case R.id.action_about:
                 Log.d(TAG, "About");
                 showAboutDialog();
+                return true;
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
@@ -172,6 +185,25 @@ public class Checkin extends AppCompatActivity {
         String link = "<a href='https://docs.google.com/spreadsheets/d/1PcjTdM1OGyqVA9ePNm-7dMqlI246xuLH4tik4EvX6tc/edit?usp=sharing'>Device Tracking Spreadsheet</a>";
         spreadsheetLink.setText(Html.fromHtml(link));
         builder.setView(spreadsheetLink);
+
+        builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
+    }
+
+    protected void executeTask(int task, Bundle params){
+        new MakeRequestTask(this, getAssets(), getFilesDir(), mHandler,
+                task, params).execute();
+    }
+
+    private void showNoConnectionDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("No Internet Connection");
+        builder.setMessage("No internet connection.\nTry again once a connection has been established.");
 
         builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
             @Override
