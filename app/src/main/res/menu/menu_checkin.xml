@@ -2,14 +2,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".Checkin">
 
-    <!--
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
-    -->
-
     <item android:id="@+id/action_sync_device_info"
         android:title="@string/action_sync_device_info"
         android:icon="@android:drawable/stat_notify_sync"
         app:showAsAction="ifRoom|collapseActionView" />
+
+    <item android:id="@+id/action_about"
+        android:title="@string/action_about"
+        app:showAsAction="never" />
 
 </menu>

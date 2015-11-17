@@ -1,10 +1,13 @@
 package awdevicecheckin.com.airwatchdevicecheck_in;
 
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,7 +16,10 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -134,12 +140,46 @@ public class Checkin extends AppCompatActivity {
                 // refresh the list of owners
                 new MakeRequestTask(this, getAssets(), getFilesDir(), mHandler,
                         MakeRequestTask.TASK_GET_DEVICE_OWNER, DeviceUtil.getDeviceDetails()).execute();
+            case R.id.action_about:
+                Log.d(TAG, "About");
+                showAboutDialog();
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
-
         }
+    }
+
+    private void showAboutDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.app_name);
+
+        String version = null;
+        try {
+            version = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            builder.setMessage("Version: " + version
+            + "\n\nDeveloper: Perron Jones"
+            + "\nEmail: perronjones@air-watch.com"
+            + "\n\nClick the link below for device tracking page.\n");
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Name Not Found Exception occurred showing about dialog. e: " + e.getMessage());
+        }
+
+        TextView spreadsheetLink = new TextView(this);
+        spreadsheetLink.setClickable(true);
+        spreadsheetLink.setGravity(Gravity.CENTER_HORIZONTAL);
+        spreadsheetLink.setMovementMethod(LinkMovementMethod.getInstance());
+        String link = "<a href='https://docs.google.com/spreadsheets/d/1PcjTdM1OGyqVA9ePNm-7dMqlI246xuLH4tik4EvX6tc/edit?usp=sharing'>Device Tracking Spreadsheet</a>";
+        spreadsheetLink.setText(Html.fromHtml(link));
+        builder.setView(spreadsheetLink);
+
+        builder.setNeutralButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 
 }
