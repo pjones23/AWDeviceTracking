@@ -94,6 +94,7 @@ public class Checkin extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(), ChooseOwner.class));
+                finish();
             }
         });
         mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

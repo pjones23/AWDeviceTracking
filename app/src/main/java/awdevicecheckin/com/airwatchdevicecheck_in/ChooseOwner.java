@@ -15,6 +15,7 @@ package awdevicecheckin.com.airwatchdevicecheck_in;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -78,6 +79,7 @@ public class ChooseOwner extends AppCompatActivity implements SearchView.OnQuery
                         }
                         break;
                     case MakeRequestTask.TASK_ADD_UPDATE_DEVICE_RECORD:
+                        startActivity(new Intent(getApplicationContext(), Checkin.class));
                         finish();
                         break;
                     case MakeRequestTask.TASK_ADD_OWNER:
@@ -122,6 +124,7 @@ public class ChooseOwner extends AppCompatActivity implements SearchView.OnQuery
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), Checkin.class));
                 finish();
             }
         });
