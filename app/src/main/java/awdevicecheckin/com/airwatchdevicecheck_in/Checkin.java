@@ -1,12 +1,11 @@
 package awdevicecheckin.com.airwatchdevicecheck_in;
 
-import android.app.Activity;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -66,6 +65,7 @@ public class Checkin extends AppCompatActivity {
         setContentView(R.layout.activity_checkin);
 
         Toolbar checkinToolbar = (Toolbar) findViewById(R.id.checkinToolbar);
+        checkinToolbar.setTitleTextColor(Color.WHITE);
         setSupportActionBar(checkinToolbar);
 
         deviceInfoTxt = (TextView) findViewById(R.id.deviceInfoTxt);
