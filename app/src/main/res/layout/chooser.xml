@@ -23,11 +23,11 @@
         android:id="@+id/chooserToolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        android:background="@color/aw_blue"
         android:elevation="4dp"/>
 
     <LinearLayout android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="?android:attr/listPreferredItemHeight"
         android:weightSum="2"
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
@@ -37,7 +37,7 @@
 
         <Button
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="?android:attr/listPreferredItemHeight"
             android:text="@string/cancel_btnTxt"
             android:id="@+id/cancelBtn"
             android:background="@android:color/holo_red_light"
@@ -48,7 +48,7 @@
 
         <Button
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="?android:attr/listPreferredItemHeight"
             android:text="@string/ok_btnTxt"
             android:id="@+id/okBtn"
             android:background="@android:color/holo_green_light"

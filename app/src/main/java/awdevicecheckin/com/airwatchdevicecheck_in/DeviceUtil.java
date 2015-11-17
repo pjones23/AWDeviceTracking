@@ -34,7 +34,7 @@ public class DeviceUtil {
         deviceInfo.putString(DEVICE_NAME, ((Build.BRAND != null && Build.BRAND != "") ? Build.BRAND
                 : Build.MANUFACTURER));
         deviceInfo.putString(DEVICE_MODEL, Build.MODEL);
-        deviceInfo.putString(DEVICE_OS, Build.VERSION.RELEASE);
+        deviceInfo.putString(DEVICE_OS, Build.VERSION.RELEASE + " (API: " + Build.VERSION.SDK_INT + ")");
         deviceInfo.putString(DEVICE_SERIAL, ((Build.SERIAL != null && Build.SERIAL != "") ? Build.SERIAL
                 : Build.HARDWARE + "-" + Build.DISPLAY));
 

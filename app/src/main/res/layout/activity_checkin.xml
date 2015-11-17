@@ -23,7 +23,7 @@
         android:id="@+id/checkinToolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        android:background="@color/aw_blue"
         android:elevation="4dp"/>
 
     <TextView
@@ -68,10 +68,11 @@
 
     <Button
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="?android:attr/listPreferredItemHeight"
         android:text="@string/change_owner_label"
+        android:textColor="#FFFFFF"
         android:id="@+id/changeOwnerBtn"
-        android:background="@color/colorPrimary"
+        android:background="@color/aw_blue"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
